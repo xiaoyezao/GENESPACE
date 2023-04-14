@@ -348,7 +348,10 @@ run_genespace <- function(gsParam,
   }
 
   gsParam <<- gsParam
-
+  
+  gpFile <- file.path(gsParam$paths$results, "gsParams.rda")
+  save(gsParam, file = gpFile)
+  
   ##############################################################################
   # 9. Build pan-genes (aka pan-genome annotations)
   cat("\n############################", strwrap(
