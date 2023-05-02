@@ -35,6 +35,7 @@
 #' @param blkID vector of block IDs
 #' @param ladderize logical, should the tree be ladderized?
 #' @param treFile file.path to the tree file.
+#' @param verbose logical, should updates be printed to the console?
 #' @param ... additional parameters passed on to other functions
 #' \cr
 #' If called, \code{utils} returns its own arguments.
@@ -48,7 +49,7 @@
 #' @export
 .onAttach <- function(...) {
   packageStartupMessage(paste(strwrap(
-    "GENESPACE v1.2.0: synteny and orthology constrained
+    "GENESPACE v1.2.3: synteny and orthology constrained
     comparative genomics\n",
     indent = 0, exdent = 8), collapse = "\n"))
 }
@@ -487,7 +488,7 @@ check_MCScanXhInstall <- function(filepath){
 #' @export
 parse_ogs <- function(filepath, genomeIDs){
   id <- genome <- Orthogroup <- NULL
-  tmp <- fread(filepath, showProgress = F, verbose = F)
+  tmp <- fread(filepath, showProgress = FALSE, header = TRUE, check.names = FALSE)
   tmp <- melt(
     tmp, id.vars = "Orthogroup", measure.vars = genomeIDs,
     variable.name = "genome", value.name = "id")
@@ -509,7 +510,7 @@ parse_ogs <- function(filepath, genomeIDs){
 parse_hogs <- function(filepath){
   id <- genome <- HOG <- hogID <- OG <- orthofinderInternalData_XXX_OG <-
     orthofinderInternalData_XXX_hogID <- orthofinderInternalData_XXX_HOG <- NULL
-  d <- fread(filepath, showProgress = FALSE)
+  d <- fread(filepath, showProgress = FALSE, header = TRUE, check.names = FALSE)
   setnames(d, 1:3, sprintf("orthofinderInternalData_XXX_%s", colnames(d)[1:3]))
   sd <- colnames(d)[-(1:3)]
   d[,orthofinderInternalData_XXX_hogID := paste(
@@ -534,7 +535,7 @@ parse_hogs <- function(filepath){
 #' @export
 parse_orthologues <- function(filepath){
   orthID <- id1 <- id2 <- NULL
-  x <- fread(filepath, showProgress = F)
+  x <- fread(filepath, showProgress = F, header = TRUE, check.names = FALSE)
   refID <- colnames(x)[2]
   altID <- colnames(x)[3]
   setnames(x, c("og", "id1", "id2"))
@@ -1396,5 +1397,47 @@ get_orderedTips <- function(treFile, ladderize = TRUE, genomeIDs){
   }else{
     cat("the ape library is not available, not using the tree to order genomes ")
     return(genomeIDs)
+  }
+}
+
+#' @title get all pairwise combination of hits between two genomes
+#' @description
+#' \code{pull_pairwise} Builds new pairwise files in /syntenicHits
+#' @rdname utils
+#' @import data.table
+#' @export
+pull_pairwise <- function(gsParam, verbose){
+
+  sameOG <- genome <- NULL
+
+  bl <- data.table(gsParam$synteny$blast)
+  bed <- read_combBed(file.path(gsParam$paths$results, "combBed.txt"))
+
+  for(i in 1:nrow(bl)){
+    qu <- bl$query[i]
+    ta <- bl$target[i]
+    blf <- bl$synHits[i]
+    blo <- file.path(gsParam$paths$syntenicHits,
+                     sprintf("%s_vs_%s.pairwise.txt.gz", qu, ta))
+    h <- subset(read_synHits(blf), sameOG)[,c("ofID1", "ofID2", "regID", "blkID")]
+    a1 <- with(subset(bed, genome == qu), data.table(
+      ofID1 = ofID, arrayID1 = arrayID))
+    a2 <- with(subset(bed, genome == ta), data.table(
+      ofID2 = ofID, arrayID2 = arrayID))
+    ho <- merge(a1, merge(a2, h, by  = "ofID2", allow.cartesian = T, all.y = T),
+                by = "ofID1", allow.cartesian = T, all.y = T)
+    b1 <- with(subset(bed, genome == qu), data.table(
+      genome1 = genome, id1 = id, arrayID1 = arrayID))
+    b2 <- with(subset(bed, genome == ta), data.table(
+      genome2 = genome, id2 = id, arrayID2 = arrayID))
+    ho[,`:=`(ofID1 = NULL, ofID2 = NULL)]
+    ho2 <- merge(b2, ho, by  = "arrayID2", allow.cartesian = T, all.y = T)
+    ho2 <- subset(ho2, !duplicated(ho2))
+    ho2 <- merge(b1, ho2, by = "arrayID1", allow.cartesian = T, all.y = T)
+    ho2 <- subset(ho2, !duplicated(ho2))
+    ho2[,`:=`(arrayID1 = NULL, arrayID2 = NULL)]
+    if(verbose)
+      cat(sprintf("\t%s vs. %s: synHits = %s, pairwiseHits = %s\n", qu, ta, nrow(h), nrow(ho2)))
+    fwrite(ho2, file = blo, sep = "\t", quote = F, verbose = F, showProgress = F)
   }
 }

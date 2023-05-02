@@ -8,7 +8,9 @@ run_genespace(
   gsParam,
   overwrite = FALSE,
   overwriteBed = overwrite,
-  overwriteSynHits = overwrite
+  overwriteSynHits = overwrite,
+  overwriteInBlkOF = TRUE,
+  makePairwiseFiles = FALSE
 )
 }
 \arguments{
@@ -22,6 +24,11 @@ overwritten?}
 
 \item{overwriteSynHits}{logial, should the annotated blast files be
 overwritten?}
+
+\item{overwriteInBlkOF}{logical, should in-block orthogroups be overwritten?}
+
+\item{makePairwiseFiles}{logical, should pairwise hits in blocks files be
+generated?}
 }
 \value{
 a gsParam list.
