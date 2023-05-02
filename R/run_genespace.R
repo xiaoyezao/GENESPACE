@@ -135,7 +135,8 @@ run_genespace <- function(gsParam,
     if(ps){
       cat("\t... found existing run, not re-running orthofinder\n")
     }else{
-      stop("genomes in the existing orthofinder run do not exactly match specified genomeIDs\n")
+      print(spids)
+      #stop("genomes in the existing orthofinder run do not exactly match specified genomeIDs\n")
     }
   }
 
