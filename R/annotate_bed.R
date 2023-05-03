@@ -147,7 +147,7 @@ annotate_bed <- function(gsParam){
   nGaps       <- gsParam$params$nGaps
   synBuff     <- gsParam$params$synBuff
   blkSize     <- gsParam$params$blkSize
-  maxOgPlaces <- gsParam$params$maxOgPlaces
+  maxOgPlaces <- gsParam$maxOgPlaces
   arrayJump   <- gsParam$params$synBuff / 2
   nCores      <- gsParam$params$nCores
   ploidy      <- gsParam$ploidy
