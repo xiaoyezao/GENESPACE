@@ -1,3 +1,9 @@
+1. maxOgPlaces in annotate_bed.R
+2. GenomeIDs check in run_genespace.R
+
+
+
+
 ## GENESPACE: an R package for synteny- and orthology-constrained comparative genomics. 
 
 This is version 1 of GENESPACE. GENESPACE is an analytical pipeline to understand patterns of synteny and orthology across multiple genomes. The manuscript describing GENESPACE is now pubished in eLife. [Find the article here](https://elifesciences.org/articles/78526). Please cite this if you use GENESPACE. 
