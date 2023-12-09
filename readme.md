@@ -1,7 +1,7 @@
 Compared to the original version, I made several changes:
 1. maxOgPlaces in annotate_bed.R
    ```
-   maxOgPlaces is hard-coded as "8", so you can not change this with the argument "maxOgPlaces" in init_genespace()
+   maxOgPlaces is hard-coded as ploidy * "8", so you can not change this with the argument "maxOgPlaces" in init_genespace()
    ```
 2. save an image before the final pangene step
    ```
