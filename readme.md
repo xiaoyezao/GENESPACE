@@ -1,5 +1,14 @@
+Compared to the original version, I made several changes:
 1. maxOgPlaces in annotate_bed.R
-2. GenomeIDs check in run_genespace.R
+   ```
+   maxOgPlaces is hard-coded as "8", so you can not change this with the argument "maxOgPlaces" in init_genespace()
+   ```
+2. save an image before the final pangene step
+   ```
+   sometimes (maybe when the genome quality is bad) we can get through the final step, but we may only need what has been done in the
+   first eight steps, and have the R objects. However, the R object won't be generated if step 9 fails
+   '''
+3. GenomeIDs check in run_genespace.R
 
 
 
