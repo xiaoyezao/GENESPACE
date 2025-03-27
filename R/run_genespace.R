@@ -337,6 +337,7 @@ run_genespace <- function(gsParam,
   ok4pg <- bed[,list(propOK = (sum(isOK) / .N) > .75), by = "genome"]
   ok4rip <- bed[,list(nGood = (uniqueN(chr[isOK]) < 100)), by = "genome"]
 
+  ## we modified the floowing block to make custom riparian plots using AGB
   if(length(hapGenomes) == 0){
     cat(strwrap("NOTE!!! No genomes provided with ploidy < 2. Phasing of polyploid references is not currently supported internally. You will need to make custom riparian plots",
                 indent = 8, exdent = 8), sep = "\n")
@@ -353,36 +354,94 @@ run_genespace <- function(gsParam,
       cat("\t##############\n\tBuilding ref.-phased blks and riparian plots for haploid genomes:\n")
       labs <- align_charLeft(hapGenomes)
       names(labs) <- hapGenomes
-      for(i in hapGenomes){
-        plotf <- file.path(gsParam$paths$riparian,
-                           sprintf("%s_geneOrder.rip.pdf", i))
+      backgroundGenomes <- c("sp45","sp03","sp21","sp18","AGB")
+      targetGenomes <- hapGenomes[!hapGenomes %in% backgroundGenomes]
+      gsParam$genomeIDs <- c(targetGenomes, "AGB")
 
-        srcf <- file.path(gsParam$paths$riparian,
+      plotf1 <- file.path(gsParam$paths$riparian,
+                           sprintf("%s_geneOrder.rip1.pdf", i))
+      plotf2 <- file.path(gsParam$paths$riparian,
+                           sprintf("%s_geneOrder.rip2.pdf", i))
+
+      srcf <- file.path(gsParam$paths$riparian,
                           sprintf("%s_geneOrder_rSourceData.rda", i))
-        blkf <- file.path(gsParam$paths$riparian,
+      blkf <- file.path(gsParam$paths$riparian,
                           sprintf("%s_phasedBlks.csv", i))
 
-        rip <- plot_riparian(
-          gsParam = gsParam, useRegions = TRUE, refGenome = i, pdfFile = plotf)
-        cat(sprintf("\t\t%s: %s phased blocks\n", labs[i], nrow(rip$blks)))
+      ggthemes <- ggplot2::theme(
+        panel.background = ggplot2::element_rect(fill = "white"))
 
-        srcd <- rip$plotData
-        save(srcd, file = srcf)
-        fwrite(rip$blks, file = blkf)
+      customPal1 <- colorRampPalette(c(rep("#E6194B",3), rep("#3CB44B",3), rep("#FFE119",3),
+                                          rep("#0082C8",3), rep("#F58231",3), rep("#911EB4",3),
+                                          rep("#46F0F0",3), rep("#F032E6",3), rep("#D2F53C",3),
+                                          rep("#FABEBE",3), rep("#008080",3), rep("#E6BEFF",3),
+                                          rep("#AA6E28",3), rep("#FFFAC8",3), rep("#800000",3)
+                                          ))
+      refChrOrder1 <- c("a1","b1","c1",
+                           "a2","b2","c2",
+                           "a3","b3","c3",
+                           "a4","b4","c4",
+                           "a5","b5","c5",
+                           "a6","b6","c6",
+                           "a7","b7","c7",
+                           "a8","b8","c8",
+                           "a9","b9","c9",
+                           "a10","b10","c10",
+                           "a11","b11","c11",
+                           "a12","b12","c12",
+                           "a13","b13","c13",
+                           "a14","b14","c14",
+                           "a15","b15","c15")
+      
+      customPal2 <- colorRampPalette(c(rep("#E6194B", 15), rep("#3CB44B", 15), rep("#911EB4",15)))
+      
+      refChrOrder2 <- c("a1","a2","a3","a4","a5","a6","a7","a8","a9","a10","a11","a12","a13","a14","a15",
+                 "b1","b2","b3","b4","b5","b6","b7","b8","b9","b10","b11","b12","b13","b14","b15",
+                 "c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12","c13","c14","c15")
+      
 
-        plotf <- file.path(gsParam$paths$riparian,
-                           sprintf("%s_bp.rip.pdf", i))
-        srcf <- file.path(gsParam$paths$riparian,
-                          sprintf("%s_bp_rSourceData.rda", i))
-        rip <- plot_riparian(
-          gsParam = gsParam, useOrder = FALSE, useRegions = TRUE,
-          refGenome = i, pdfFile = plotf)
-        srcd <- rip$plotData
-        save(srcd, file = srcf)
-      }
+      rip <- plot_riparian(
+            gsParam = gsParam, useRegions = TRUE, refGenome = "AGB",
+            labelTheseGenomes = c(targetGenomes, "AGB"),
+            customRefChrOrder = refChrOrder1,
+            minChrLen2plot = 50,
+            chrBorderCol = "black",
+            forceRecalcBlocks = FALSE,
+            addThemes = ggthemes,
+            palette = customPal1,
+            braidAlpha = 0.7,
+            chrFill = "lightgrey",
+            pdfFile = plotf1)
+
+      rip <- plot_riparian(
+            gsParam = gsParam, useRegions = TRUE, refGenome = "AGB",
+            labelTheseGenomes = c(targetGenomes, "AGB"),
+            customRefChrOrder = refChrOrder2,
+            minChrLen2plot = 50,
+            chrBorderCol = "black",
+            forceRecalcBlocks = FALSE,
+            addThemes = ggthemes,
+            palette = customPal2,
+            braidAlpha = 0.7,
+            chrFill = "lightgrey",
+            pdfFile = plotf2)
+
+      cat(sprintf("\t\t%s: %s phased blocks\n", labs[i], nrow(rip$blks)))
+
+      srcd <- rip$plotData
+      save(srcd, file = srcf)
+      fwrite(rip$blks, file = blkf)
+
+      #plotf <- file.path(gsParam$paths$riparian, sprintf("%s_bp.rip.pdf", i))
+      #srcf <- file.path(gsParam$paths$riparian,sprintf("%s_bp_rSourceData.rda", i))
+      #rip <- plot_riparian(gsParam = gsParam, useOrder = FALSE, useRegions = TRUE, refGenome = i, pdfFile = plotf)
+      #srcd <- rip$plotData
+      #save(srcd, file = srcf)
+      
       cat("\tDone!\n")
     }
   }
+  
 
   gsParam <<- gsParam
   
