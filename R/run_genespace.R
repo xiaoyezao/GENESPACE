@@ -358,7 +358,8 @@ run_genespace <- function(gsParam,
       backgroundGenomes <- c("sp45","sp03","sp21","sp18","AGB","sp32")
       targetGenomes <- hapGenomes[!hapGenomes %in% backgroundGenomes]
       #gsParam$genomeIDs <- c(targetGenomes, "AGB")
-
+      
+      i <- "AGB"
       plotf1 <- file.path(gsParam$paths$riparian,
                            sprintf("%s_geneOrder.rip1.pdf", i))
       plotf2 <- file.path(gsParam$paths$riparian,
