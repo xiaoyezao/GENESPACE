@@ -337,7 +337,8 @@ run_genespace <- function(gsParam,
   ok4pg <- bed[,list(propOK = (sum(isOK) / .N) > .75), by = "genome"]
   ok4rip <- bed[,list(nGood = (uniqueN(chr[isOK]) < 100)), by = "genome"]
 
-  ## we modified the floowing block to make custom riparian plots using AGB
+  ## we modified the following block to make custom riparian plots using AGB
+  #-------------------------------------block modified---------------------------------------------------------
   if(length(hapGenomes) == 0){
     cat(strwrap("NOTE!!! No genomes provided with ploidy < 2. Phasing of polyploid references is not currently supported internally. You will need to make custom riparian plots",
                 indent = 8, exdent = 8), sep = "\n")
@@ -354,9 +355,9 @@ run_genespace <- function(gsParam,
       cat("\t##############\n\tBuilding ref.-phased blks and riparian plots for haploid genomes:\n")
       labs <- align_charLeft(hapGenomes)
       names(labs) <- hapGenomes
-      backgroundGenomes <- c("sp45","sp03","sp21","sp18","AGB")
+      backgroundGenomes <- c("sp45","sp03","sp21","sp18","AGB","sp32")
       targetGenomes <- hapGenomes[!hapGenomes %in% backgroundGenomes]
-      gsParam$genomeIDs <- c(targetGenomes, "AGB")
+      #gsParam$genomeIDs <- c(targetGenomes, "AGB")
 
       plotf1 <- file.path(gsParam$paths$riparian,
                            sprintf("%s_geneOrder.rip1.pdf", i))
@@ -402,6 +403,7 @@ run_genespace <- function(gsParam,
 
       rip <- plot_riparian(
             gsParam = gsParam, useRegions = TRUE, refGenome = "AGB",
+            genomeIDs = c(targetGenomes, "AGB"),
             labelTheseGenomes = c(targetGenomes, "AGB"),
             customRefChrOrder = refChrOrder1,
             minChrLen2plot = 50,
@@ -415,6 +417,7 @@ run_genespace <- function(gsParam,
 
       rip <- plot_riparian(
             gsParam = gsParam, useRegions = TRUE, refGenome = "AGB",
+            genomeIDs = c(targetGenomes, "AGB"),
             labelTheseGenomes = c(targetGenomes, "AGB"),
             customRefChrOrder = refChrOrder2,
             minChrLen2plot = 50,
@@ -437,7 +440,7 @@ run_genespace <- function(gsParam,
       #rip <- plot_riparian(gsParam = gsParam, useOrder = FALSE, useRegions = TRUE, refGenome = i, pdfFile = plotf)
       #srcd <- rip$plotData
       #save(srcd, file = srcf)
-      
+      #------------------------------------------block modified----------------------------------------------------
       cat("\tDone!\n")
     }
   }
@@ -462,16 +465,36 @@ run_genespace <- function(gsParam,
       sep = "\n")
   labs <- align_charLeft(gids)
   names(labs) <- gids
-  for(i in gids){
+  
+  # let's define two reference species
+  refs <- c("sp32","AGB")
+  for(i in refs){
+    # only use reference species
     cat(sprintf("\t%s: ", labs[i]))
     pgref <- syntenic_pangenes(gsParam = gsParam, refGenome = i)
     with(pgref, cat(sprintf(
       "n pos. = %s, synOgs = %s, array mem. = %s, NS orthos %s\n",
       uniqueN(pgID), sum(flag == "PASS"), sum(flag == "array"), sum(flag == "NSOrtho"))))
   }
-
-
-
+  
+  # add the following block to make pangene table
+  #------------------------block added---------------------------
+  for(i in refs){
+    pangenome <- query_pangenes(
+      gsParam,
+      bed = NULL,
+      refGenome = i,
+      transform = TRUE,
+      showArrayMem = TRUE,
+      showNSOrtho = TRUE,
+      maxMem2Show = Inf,
+      showUnPlacedPgs = TRUE
+      )
+    gpFile <- file.path(gsParam$paths$pangenes, sprintf("%s_synOG.txt", i)
+    save(pangenome, file = gpFile)                 
+    #fwrite(pangenome,file=gpFile, quote = F, sep = "\t", na = NA)
+  }
+  #------------------------block added---------------------------
   ##############################################################################
   # 8. Print summaries and return
 
