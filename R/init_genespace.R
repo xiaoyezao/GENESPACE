@@ -552,24 +552,42 @@ init_genespace <- function(wd,
 
   ##############################################################################
   # -- 3.6 check for MCScanX_h
-  tmp <- check_MCScanXhInstall(path2mcscanx)
+  # tmp <- check_MCScanXhInstall(path2mcscanx) # commented out by@Tao
+  tmp <- Sys.which("MCScanX_h")  # Check if MCScanX_h is in the PATH
 
-  if(is.na(tmp)){
+  isThere <- nzchar(tmp) && basename(tmp) == "MCScanX_h"  # More explicit check
+
+  if (isThere) {
+    mcscanxhInstall <- path.expand(tmp)
+    cat(sprintf("\tFound valid MCScanX_h executable: `%s`\n", mcscanxhInstall))
+  } else {
     cat(strwrap(sprintf(
-      "**WARNING!!** Can't find valid path to the MCScanX_h executable in `%s`.
+      "**WARNING!!** Can't find MCScanX_h executable in the PATH.
       Only plotting and query GENESPACE functions will be functional. If you
-      want to run the main `synteny` function, you will need to specify a path
-      to a valid MCScanX installation (see README).",
-      path2mcscanx), exdent = 8),
-      sep = "\n")
+      want to run the main `synteny` function, you will need to install
+      MCScanX and check MCScanX_h is callable from the current PATH."), 
+      exdent = 8), sep = "\n")
     mcscanxhInstall <- NA
-  }else{
-    mcscanxhInstall <- file.path(path.expand(path2mcscanx), "MCScanX_h")
-    cat(sprintf("\tFound valid MCScanX_h executable: `%s`\n",
-                mcscanxhInstall))
   }
-  MCScanX_hCall <- ifelse(
-    is.na(mcscanxhInstall) || is.na(path2mcscanx), NA, mcscanxhInstall)
+
+  MCScanX_hCall <- ifelse(is.na(mcscanxhInstall), NA, mcscanxhInstall)
+  
+  #if(is.na(tmp)){
+  #  cat(strwrap(sprintf(
+  #    "**WARNING!!** Can't find valid path to the MCScanX_h executable in `%s`.
+  #    Only plotting and query GENESPACE functions will be functional. If you
+  #    want to run the main `synteny` function, you will need to specify a path
+  #    to a valid MCScanX installation (see README).",
+  #    path2mcscanx), exdent = 8),
+  #    sep = "\n")
+  #  mcscanxhInstall <- NA
+  #}else{
+  #  mcscanxhInstall <- file.path(path.expand(path2mcscanx), "MCScanX_h")
+  #  cat(sprintf("\tFound valid MCScanX_h executable: `%s`\n",
+  #              mcscanxhInstall))
+  #}
+  #MCScanX_hCall <- ifelse(
+  #  is.na(mcscanxhInstall) || is.na(path2mcscanx), NA, mcscanxhInstall)
 
   ##############################################################################
   # -- 3.7 combine 3rd party calls into a list
