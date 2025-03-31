@@ -355,7 +355,7 @@ run_genespace <- function(gsParam,
       cat("\t##############\n\tBuilding ref.-phased blks and riparian plots for haploid genomes:\n")
       labs <- align_charLeft(hapGenomes)
       names(labs) <- hapGenomes
-      backgroundGenomes <- c("sp45","sp03","sp21","sp18","AGB","sp32")
+      backgroundGenomes <- c("MUT","CAR","CIC","AST","AGB","ANC")
       targetGenomes <- hapGenomes[!hapGenomes %in% backgroundGenomes]
       #gsParam$genomeIDs <- c(targetGenomes, "AGB")
       
@@ -468,7 +468,7 @@ run_genespace <- function(gsParam,
   names(labs) <- gids
   
   # let's define two reference species
-  refs <- c("sp32","AGB")
+  refs <- c("ANC","AGB")
   for(i in refs){
     # only use reference species
     cat(sprintf("\t%s: ", labs[i]))
