@@ -10,7 +10,7 @@
    conda install -c bioconda orthofinder=2.5.5
    conda install bioconda::mcscanx
 
-   conda install r-data.table r-dbscan r-R.utils r-devtools r-igraph
+   conda install r-data.table r-dbscan r-R.utils r-devtools r-igraph r-mass
    conda install bioconductor-Biostrings bioconductor-rtracklayer
 
    devtools::install_github("xiaoyezao/GENESPACE", upgrade = F)
