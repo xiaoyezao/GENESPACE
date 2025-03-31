@@ -1,5 +1,6 @@
-Compared to the original version, I made several changes:
-1. maxOgPlaces in annotate_bed.R
+## This is a modified version of [GENESPACE](https://github.com/jtlovell/GENESPACE)
+Compared to the original version, several changes are made:
+1. `maxOgPlaces` is hard-coded as `ploidy * 8` in original GENESPACE. However in plants, especially plants with multiple rounds of WGD, this is too strict. In this version, this is `ploidy * 24` in default, and you can adjust it according to the genome complexity of your species, e.g., `maxOgPlaces=16`.
    ```
    maxOgPlaces is hard-coded as ploidy * "8", so you can not change this with the argument "maxOgPlaces" in init_genespace()
    ```
