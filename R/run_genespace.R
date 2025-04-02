@@ -492,8 +492,8 @@ run_genespace <- function(gsParam,
       showUnPlacedPgs = TRUE
       )
     gpFile <- file.path(gsParam$paths$pangenes, sprintf("%s_synOG.txt", i))
-    save(pangenome, file = gpFile)                 
-    #fwrite(pangenome,file=gpFile, quote = F, sep = "\t", na = NA)
+    #save(pangenome, file = gpFile)                 
+    fwrite(pangenome, file=gpFile, quote = F, sep = "\t", na = NA)
   }
   #------------------------block added---------------------------
   ##############################################################################
