@@ -497,7 +497,7 @@ run_genespace <- function(gsParam,
   }
   #------------------------block added---------------------------
   ##############################################################################
-  # 8. Print summaries and return
+  # 10. Print summaries and return
 
   # --- make pairwise files
   if(makePairwiseFiles){
@@ -536,3 +536,33 @@ run_genespace <- function(gsParam,
   return(gsParam)
 }
 
+#------------------------block added---------------------------
+##############################################################################
+  # Make and copy files for AGB pipeline
+cat("\n############################\n")
+cat ("Make and copy files for AGB pipeline ...\n")
+
+# Define the source paths for the files
+riparianPath <- file.path(gsParam$paths$results, "riparian")
+pangenePath <- file.path(gsParam$paths$results, "pangenes")
+
+# List files with .pdf and _synOG.txt extensions
+riparian_files <- list.files(riparianPath, pattern = "\\.pdf$", full.names = TRUE)
+pangene_files <- list.files(pangenePath, pattern = "_synOG\\.txt$", full.names = TRUE)
+
+# Define the destination folder for macrosynteny
+macrosynteny <- file.path(dirname(dirname(gsParam$paths$results)), "results/")
+
+# Create the destination directory if it doesn't exist
+if (!dir.exists(macrosynteny)) {
+    dir.create(macrosynteny, recursive = TRUE)
+}
+
+# Check if both expected file types exist and copy them
+if (length(riparian_files) > 0 & length(pangene_files) > 0) {
+    file.copy(riparian_files, macrosynteny, overwrite = TRUE)
+    file.copy(pangene_files, macrosynteny, overwrite = TRUE)
+    cat("Files copied successfully, please check the riparian plots and pangene tables in: ", macrosynteny, "...")
+} else {
+    cat("The riparian or pangene files don't exist, please check whether the Genespace run was successful...")
+}
