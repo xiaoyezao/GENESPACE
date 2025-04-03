@@ -496,6 +496,7 @@ run_genespace <- function(gsParam,
     fwrite(pangenome, file=gpFile, quote = F, sep = "\t", na = NA)
   }
   #------------------------block added---------------------------
+  
   ##############################################################################
   # 10. Print summaries and return
 
@@ -534,11 +535,10 @@ run_genespace <- function(gsParam,
     sep = "\n")
   save(gsParam, file = gpFile)
   return(gsParam)
-}
 
 #------------------------block added---------------------------
 ##############################################################################
-  # Make and copy files for AGB pipeline
+# Make and copy files for AGB pipeline
 cat("\n############################\n")
 cat ("Make and copy files for AGB pipeline ...\n")
 
@@ -565,4 +565,5 @@ if (length(riparian_files) > 0 & length(pangene_files) > 0) {
     cat("Files copied successfully, please check the riparian plots and pangene tables in: ", macrosynteny, "...")
 } else {
     cat("The riparian or pangene files don't exist, please check whether the Genespace run was successful...")
+}
 }
