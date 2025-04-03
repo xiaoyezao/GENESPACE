@@ -534,7 +534,7 @@ run_genespace <- function(gsParam,
     "############################",
     sep = "\n")
   save(gsParam, file = gpFile)
-  return(gsParam)
+  #return(gsParam)
 
 #------------------------block added---------------------------
 ##############################################################################
@@ -566,4 +566,5 @@ if (length(riparian_files) > 0 & length(pangene_files) > 0) {
 } else {
     cat("The riparian or pangene files don't exist, please check whether the Genespace run was successful...")
 }
+  return(gsParam)
 }
