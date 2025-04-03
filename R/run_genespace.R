@@ -74,6 +74,7 @@
 #' }
 #'
 #' @export
+
 run_genespace <- function(gsParam,
                           overwrite = FALSE,
                           overwriteBed = overwrite,
@@ -543,15 +544,15 @@ cat("\n############################\n")
 cat ("Make and copy files for AGB pipeline ...\n")
 
 # Define the source paths for the files
-riparianPath <- file.path(gsParam$paths$results, "riparian")
-pangenePath <- file.path(gsParam$paths$results, "pangenes")
+riparianPath <- file.path(gsParam$paths$wd, "riparian")
+pangenePath <- file.path(gsParam$paths$wd, "pangenes")
 
 # List files with .pdf and _synOG.txt extensions
 riparian_files <- list.files(riparianPath, pattern = "\\.pdf$", full.names = TRUE)
 pangene_files <- list.files(pangenePath, pattern = "_synOG\\.txt$", full.names = TRUE)
 
 # Define the destination folder for macrosynteny
-macrosynteny <- file.path(dirname(dirname(gsParam$paths$results)), "results/")
+macrosynteny <- file.path(dirname(gsParam$paths$wd), "results/")
 
 # Create the destination directory if it doesn't exist
 if (!dir.exists(macrosynteny)) {
@@ -566,5 +567,6 @@ if (length(riparian_files) > 0 & length(pangene_files) > 0) {
 } else {
     cat("The riparian or pangene files don't exist, please check whether the Genespace run was successful...")
 }
+  cat("\n############################\n")
   return(gsParam)
 }
