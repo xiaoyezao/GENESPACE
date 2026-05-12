@@ -1,7 +1,7 @@
 ## This is a modified version of [GENESPACE](https://github.com/jtlovell/GENESPACE)
 ### Compared to the original version, several changes are made:
 1. __Adjust `maxOgPlaces` to work better with plant genomes.__ `maxOgPlaces` is hard-coded as `ploidy * 8` in original GENESPACE. However in plants, especially plants with multiple rounds of WGD, this is too strict. In this version, this is `ploidy * 24` in default, and you can adjust it according to the genome complexity of your species, e.g., `maxOgPlaces=16`.
-2. __Mute plot_riparian(gsParam = gsParam, ...).__ Plots with every genome as reference were rendered, which might causes issues when some genomes are too fragmented. In this new version, we use only the AGB genome as reference.
+2. __Mute plot_riparian(gsParam = gsParam, ...).__ Plotting with every genome as reference were rendered in original GENESPACE, which might causes issues when some genomes are too fragmented. In this new version, we use only the AGB genome as reference (by adding new plot_riparian() and muting original plot_riparian() in R/run_genespace.r).
 3. __Easier installation.__ In the original version, the dependencies are installed/compiled in a mix manner, which could be time-consuming or challenging in some OS environments. Here, can install/configure all dependencies using [Conda](https://www.anaconda.com/docs/getting-started/miniconda/main).
    ```sh
    # I recommend making a new environment and install all softwares and library dependencies in the same Conda environment.
